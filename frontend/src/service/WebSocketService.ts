@@ -1,0 +1,31 @@
+import { io, Socket } from "socket.io-client";
+
+class WebSocketServices{
+   private static _instance: WebSocketServices|null;
+   private socket : Socket |null= null;
+   private constructor(){}
+   public static getInstance():WebSocketServices{
+     if(!WebSocketServices._instance){
+         WebSocketServices._instance = new WebSocketServices();
+     }
+     return WebSocketServices._instance;
+   }
+   public init():void{
+    this.socket = io("http://localhost:4000",{
+        transports:["websocket"]
+    })
+    this.socket.on("error",(error)=>console.log(error))
+   }
+
+   public emitEvent(event: any , message :any){
+    this.socket?.emit(event,message)
+   }
+
+      //listen to events from the server (.on method )
+   public registerEvent(event:any , handler:(e:any)=>void){
+      //handler runs whenn even is recieved 
+    this.socket?.on(event,handler); 
+   }
+}
+
+export const webSocketServices = WebSocketServices.getInstance();
