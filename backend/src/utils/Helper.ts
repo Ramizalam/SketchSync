@@ -40,7 +40,7 @@ export class Helper {
 
     return text;
   }
-
+    // this function will choose any random player as a drawer
   public static getRandom<T>(arr: T[]): T {
     const randomIndex = Math.floor(Math.random() * arr.length);
     return arr[randomIndex]!;

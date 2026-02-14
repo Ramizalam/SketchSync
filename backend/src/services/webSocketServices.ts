@@ -27,6 +27,7 @@ class WebSocketServices{
         })
 
         this.io.on("connection",(socket)=>{
+            console.log(`[WebSocketServices] user connected : ${socket.id}` )
             Object.values(GameHandler).map(handler=>handler(socket));
         })
      }
