@@ -147,8 +147,7 @@ class Room extends BaseSchema{
         if (pos === -1) return;
         const playerToRemove = this._players[pos]!; 
         delete this._scores[playerToRemove];
-        //@ts-ignore
-        this.players[pos] = this.players[this.players.length -1];
+        this.players[pos] = this.players[this.players.length - 1]!;
         this.players.pop();
         this._updateCache();
     }
