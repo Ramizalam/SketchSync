@@ -1,7 +1,7 @@
 import { action, computed, makeObservable, observable } from "mobx";
 
 interface Message {
-  by: string;
+  by: string; // player id 
   message: string;
 }
 

@@ -7,7 +7,7 @@ export enum UserRole{
 
 
 export interface Player extends BaseEntity{
-    name:String,
+    name:string,
     role : UserRole,
     score : number,
     avatar?:string;

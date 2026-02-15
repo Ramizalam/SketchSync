@@ -1,3 +1,4 @@
+import { canvasStore } from "../store/CanvasStore";
 import { gameServices } from "./GameServices";
 
 class CanvasService{
@@ -77,6 +78,16 @@ class CanvasService{
           }, this._batchTime);
        }
        this._isRequiredSending =true;
+    }
+
+    public clearCanvas(){
+        const canvas = canvasStore.Canvas;
+        if(!canvas) return;
+
+        const context  =canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        context?.clearRect(0,0,width,height);
     }
 }
 

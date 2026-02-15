@@ -1,4 +1,9 @@
 import { EventTypeEnum } from "../enums/EventTypeEnum";
+import { GameStateEnum } from "../enums/GameState";
+import store from "../store";
+import { chatStore } from "../store/ChatStore";
+import { gameStore } from "../store/GameStore";
+import { canvasService } from "./CanvasServices";
 import { webSocketServices } from "./WebSocketService";
 
 interface RoundSyncResponse{
@@ -37,6 +42,88 @@ class RoundService{
     }
 
     public drawClient(commands: Array<Array<number>>){
-        if(store.gameStore.currentPlayerId=== store.gameStore.myId);
+        if(store.gameStore.currentPlayerId=== store.gameStore.myId){
+            webSocketServices.emitEvent(EventTypeEnum.DRAW,{commands})
+        }
+    }
+
+    public chatServer(data:{message :string;id:string}){
+       const player  = gameStore.getPlayerById(data.id);
+       chatStore.addChat({message:data.message , by: player.name})
+    }
+
+    public wordRevealServer(data:{word:string}){
+        store.gameStore.setCurrentWord(data.word)
+    }
+
+    public wordRevealClient(){
+        if(store.gameStore.myChance){
+            webSocketServices.emitEvent(EventTypeEnum.WORD_REVEAL,{});
+        }
+    }
+
+    public roundSyncServer(state : RoundSyncResponse){
+        if(state.game_state){
+            store.gameStore.setGameState(state.game_state as GameStateEnum);
+        }
+
+        if(state.scores){
+            store.gameStore.setScores(state.scores);
+        }
+
+        if(state.turn_player_id){
+            store.gameStore.setCurrentPlayerId(state.turn_player_id);
+        }
+
+        if(state.round){
+            store.gameStore.setRound(state.round);
+        }
+
+        //If it is not Undefined then , it could be either  true or false 
+        if(state.choosing != undefined){
+            if(state.choosing){
+                store.gameStore.setCurrentWord(undefined);
+            }
+            store.gameStore.setChoosing(state.choosing);
+        }
+
+        if(state.wordList){
+            store.gameStore.setWordList(state.wordList)
+        }
+
+        if(state.time_left != undefined){
+            store.gameStore.setTimeLeft(state.time_left);
+        }
+
+        if(state.word_length){
+            store.gameStore.setWordLength(state.word_length);
+        }
+            
+    }
+
+    public roundSyncClient(word?:string){
+        if(store.gameStore.myChance){
+            webSocketServices.emitEvent(EventTypeEnum.ROOM_SYNC,{
+                chosen_word:word
+            })
+        }
+    }
+
+
+    public drawServer({commands}:{commands:Array<Array<number>>}){
+        for(const command of commands){
+            if(command[0]===1){
+                canvasService.drawOnCanvas(
+                    command[1],
+                    command[2],
+                    command[3],
+                    command[4],
+                );
+            }else if( command[0]==1){
+                canvasService.clearCanvas();
+            }
+        }
     }
 }
+
+export const  roundService = RoundService.getInstance();

@@ -1,4 +1,5 @@
 import { io, Socket } from "socket.io-client";
+import { EventTypeEnum } from "../enums/EventTypeEnum";
 
 class WebSocketServices{
    private static _instance: WebSocketServices|null;
@@ -14,17 +15,18 @@ class WebSocketServices{
     this.socket = io("http://localhost:4000",{
         transports:["websocket"]
     })
-    this.socket.on("error",(error)=>console.log(error))
+    this.socket.on("/error",()=>window.location.reload());
+    console.log("[WebSocket service] Initialised")
    }
 
-   public emitEvent(event: any , message :any){
-    this.socket?.emit(event,message)
+   public emitEvent(event: EventTypeEnum | string, payload:{[key:string]:any}){
+    this.socket?.emit(event.toString(),payload)
    }
 
       //listen to events from the server (.on method )
-   public registerEvent(event:any , handler:(e:any)=>void){
+   public registerEvent(event:EventTypeEnum | string , handler:(e:any)=>void){
       //handler runs whenn even is recieved 
-    this.socket?.on(event,handler); 
+    this.socket?.on(event.toString(),handler); 
    }
 }
 

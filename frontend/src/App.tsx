@@ -12,7 +12,7 @@ import { gameStore } from "./store/GameStore";
 
 interface Props {}
 
-const App: React.FC<Props> = (props) => {
+const App: React.FC<Props> = () => {
   const { gameState } = gameStore;
   const [roomId, setRoomId] = useState("");
   useEffect(() => {
@@ -51,7 +51,5 @@ const App: React.FC<Props> = (props) => {
     </div>
   );
 };
-
-App.defaultProps = {};
 
 export default observer(App);

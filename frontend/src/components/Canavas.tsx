@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { canvasService } from '../service/CanvasServices';
+import { canvasStore } from '../store/CanvasStore';
 
 interface Props{
 
@@ -15,8 +16,6 @@ interface Props{
     onStop:()=>void;
     onEnd:()=>void;
     className?:string;
-    height:number;
-    width:number;
 }
 
 interface Point{
@@ -24,53 +23,64 @@ interface Point{
     Y:number
 }
 
-const Canavas = ({onStart,onDraw,onEnd,onStop,height,width,className}:Props) => {
+const Canavas : React.FC<Props> = ({onStart,onDraw,onEnd,onStop,className}:Props) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [start,setStart] = useState<Point>({X:0,Y:0})
-
+    const {Height,Width} = canvasStore;
     useEffect(()=>{
         const canvas = canvasRef.current;
         if(!canvas) return;
-        canvas.height = height;
-        canvas.width = width;
+        canvas.height = Height;
+        canvas.width = Width;
         canvas.style.height = "100%";
         canvas.style.width = "100%";
-        canvasService.setCanvas(canvas);
+    },[Height,Width])
 
-    },[width,height])
-
-    const startDrawing = ({nativeEvent}:any)=>{
-        const {offsetX,offsetY} = nativeEvent;
+    const startDrawing = useCallback(({nativeEvent}:any)=>{
+        let { offsetX , offsetY} = nativeEvent;
         const canvas = canvasRef.current;
         if(!canvas) return;
-        const bound= canvas.getBoundingClientRect();
-        const normalizeX = offsetX/bound.width;
-        const normalizeY = offsetY/bound.height;
+        if(window.TouchEvent){
+            if(nativeEvent.changedTouches?.length){
+                offsetX = nativeEvent.changedTouches[0].clientX - canvas.offsetLeft;
+                offsetY = nativeEvent.changedTouches[0].clientY - canvas.offsetTop;
+            }
+        }
 
-        setStart({X:normalizeX ,Y:normalizeY})
-
+        const bound  = canvas.getBoundingClientRect();
+        const normalizeX = offsetX / bound.width;
+        const normalizeY = offsetY / bound.height;
+        setStart({X: normalizeX, Y: normalizeY});
         onStart();
-    }
+    },[onStart,start,canvasRef])
 
-    const finishDrawing = ()=>{
-        onEnd()
-    }
-   const draw = ({nativeEvent}:any)=>{
-        const {offsetX,offsetY} = nativeEvent; 
+    const finishDrawing = useCallback(()=>{
+        onStop()
+    },[])
+
+    const canvasLeave = useCallback(()=>{
+        onEnd();
+    },[onEnd])
+
+   const draw = useCallback(({nativeEvent}:any)=>{
+        let {offsetX,offsetY} = nativeEvent; 
         const canvas = canvasRef.current;
         if(!canvas) return;
+        if(window.TouchEvent){
+            if(nativeEvent.changedTouches?.length){
+                offsetX = nativeEvent.changedTouches[0].clientX - canvas.offsetLeft
+                offsetY = nativeEvent.changedTouches[0].clientY - canvas.offsetTop
+            }
+        }
+        const bound= canvas.getBoundingClientRect(); // returns an object which contain canvas width,height and location of canvas
+        const normalizeX = offsetX/bound.width;  
+        const normalizeY = offsetY/bound.height;  
         const context = canvas.getContext("2d")
         if(!context) return;
-        const bound= canvas.getBoundingClientRect();
-        const normalizeX = offsetX/bound.width;
-        const normalizeY = offsetY/bound.height;  
         onDraw(context,start.X,start.Y,normalizeX,normalizeY);
         setStart({X:normalizeX ,Y:normalizeY})
-    }
+    },[onDraw,start])
 
-    const canvasLeave =()=>{
-        onStop();
-    }
 
   return (
       <canvas
@@ -79,10 +89,13 @@ const Canavas = ({onStart,onDraw,onEnd,onStop,height,width,className}:Props) => 
        onMouseMove={draw}
        onMouseUp={finishDrawing}
        onMouseLeave={canvasLeave}
+       onTouchStart={startDrawing}
+       onTouchEnd={finishDrawing}
+       onTouchMove={draw}
        className={className}
        >
        </canvas>
   )
 }
 
-export default Canavas
+export default React.memo( Canavas) ;
