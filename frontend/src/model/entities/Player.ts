@@ -1,7 +1,7 @@
 import { BaseEntity } from "./_entity";
 
 export enum UserRole{
-    CREATOR = "creator",
+     CREATOR = "creator",
     JOINER = "joiner"
 }
 

@@ -1,34 +1,41 @@
 import type BaseSchema from "../model/_base.js";
 
 
-class MapService{
-    private static _instance : MapService|null;
-      private map = new Map<string, unknown>();
-    private constructor(){}
+class MapService {
+    private static _instance: MapService | null;
+    private map = new Map<string, unknown>();
+    private constructor() { }
 
-    public static getInstance(){
-        if(!MapService._instance){
+    public static getInstance() {
+        if (!MapService._instance) {
             MapService._instance = new MapService();
         }
         return MapService._instance;
     }
 
-    public setEntity<T> (id:string,value:T): void{
-        this.map.set(id,value)
+    public setEntity<T>(id: string, value: T): void {
+        console.log(`[MapService] Setting entity: ${id}`);
+        this.map.set(id, value)
     }
 
-    public getEntity<T>(id : string):T|undefined{
+    public getEntity<T>(id: string): T | undefined {
+        const exists = this.map.has(id);
+        console.log(`[MapService] Getting entity: ${id}. Found: ${exists}`);
         return this.map.get(id) as T | undefined;
     }
 
-    public remove(id : string){
+    public remove(id: string) {
         return this.map.delete(id);
     }
 
-    public has(id: string) : boolean{
-        return this.map.has(id);
+    public add<T = any>(id: string, data: T) {
+        this.map.set(id, data);
+    }
+
+    public get<T = any>(id: string): T | undefined {
+        return this.map.get(id) as T | undefined;
     }
 
 }
 
-export  const  mapService =  MapService.getInstance();
+export const mapService = MapService.getInstance();

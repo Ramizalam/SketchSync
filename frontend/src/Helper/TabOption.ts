@@ -1,1 +1,1 @@
-export const options = ["Player","Chats","Leaderboard"]
+export const options = ["Players","Chats","Leaderboard"]

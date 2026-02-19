@@ -6,124 +6,140 @@ import { gameStore } from "../store/GameStore";
 import { canvasService } from "./CanvasServices";
 import { webSocketServices } from "./WebSocketService";
 
-interface RoundSyncResponse{
-    game_state?:string;
-    scores?:{[playerId: string]: number};
-    turn_player_id?: string,
-    round?:number,
-    choosing?: boolean,
-    wordList?:string[],
-    guessed_player_id: string,
-    time_left : number,
-    round_start?:boolean,
-    round_change? :boolean,
-    word_length?:number
+interface RoundSyncResponse {
+    game_state?: string;
+    scores?: { [palyerId: string]: number };
+    turn_player_id?: string;
+    round?: number;
+    choosing?: boolean;
+    word_list?: string[];
+    guessed_player_id: string;
+    time_left: number;
+    round_start?: boolean;
+    round_change?: boolean;
+    word_length?: number;
 }
+class RoundService {
+    private static _instance: RoundService | null;
 
-class RoundService{
-    private static _instance : RoundService |null;
-    private constructor(){};
+    private constructor() { }
 
-    public static getInstance(){
-        if(!RoundService._instance){
-            return RoundService._instance = new RoundService();
+    public static getInstance(): RoundService {
+        if (!RoundService._instance) {
+            RoundService._instance = new RoundService();
         }
         return RoundService._instance;
     }
-    public init(){
-        webSocketServices.registerEvent(EventTypeEnum.CHAT,this.chatServer);
-        webSocketServices.registerEvent(EventTypeEnum.DRAW,this.drawServer);
-        webSocketServices.registerEvent(EventTypeEnum.WORD_REVEAL , this.wordRevealServer);
-        console.log("[RoundService is Intialised]")
+
+    public init() {
+        webSocketServices.registerEvent(EventTypeEnum.CHAT, this.chatServer);
+        webSocketServices.registerEvent(EventTypeEnum.DRAW, this.drawServer);
+        webSocketServices.registerEvent(
+            EventTypeEnum.WORD_REVEAL,
+            this.wordRevealServer
+        );
+        webSocketServices.registerEvent(
+            EventTypeEnum.ROUND_SYNC,
+            this.roundSyncServer
+        );
+        console.log("[Round Service] Intialized");
     }
 
-    public chatClient(message: string){
-        webSocketServices.emitEvent(EventTypeEnum.CHAT,{message});
+    public chatClient(message: string) {
+        console.log(message);
+        webSocketServices.emitEvent(EventTypeEnum.CHAT, { message });
     }
 
-    public drawClient(commands: Array<Array<number>>){
-        if(store.gameStore.currentPlayerId=== store.gameStore.myId){
-            webSocketServices.emitEvent(EventTypeEnum.DRAW,{commands})
+    public drawClient(commands: Array<Array<number>>) {
+        if (store.gameStore.currentPlayerId === store.gameStore.myId){
+            webSocketServices.emitEvent(EventTypeEnum.DRAW, { commands });
+        }
+            
+    }
+
+    public chatServer(data: { message: string; id: string }) {
+        console.log("chatSErver" ,data)
+        const player = gameStore.getPlayerById(data.id);
+        chatStore.addChat({ message: data.message, by: player.name });
+    }
+
+    public wordRevealServer(data: { word: string }) {
+        console.log("wordRevelServer",data)
+        store.gameStore.setCurrentWord(data.word);
+    }
+
+    public wordRevealClient() {
+        if (store.gameStore.myChance) {
+            webSocketServices.emitEvent(EventTypeEnum.WORD_REVEAL, {});
         }
     }
 
-    public chatServer(data:{message :string;id:string}){
-       const player  = gameStore.getPlayerById(data.id);
-       chatStore.addChat({message:data.message , by: player.name})
-    }
-
-    public wordRevealServer(data:{word:string}){
-        store.gameStore.setCurrentWord(data.word)
-    }
-
-    public wordRevealClient(){
-        if(store.gameStore.myChance){
-            webSocketServices.emitEvent(EventTypeEnum.WORD_REVEAL,{});
-        }
-    }
-
-    public roundSyncServer(state : RoundSyncResponse){
-        if(state.game_state){
+    public roundSyncServer(state: RoundSyncResponse) {
+        console.log("roomSyncServe Initialised" ,state)
+        if (state.game_state) {
             store.gameStore.setGameState(state.game_state as GameStateEnum);
         }
 
-        if(state.scores){
+        if (state.scores) {
             store.gameStore.setScores(state.scores);
         }
 
-        if(state.turn_player_id){
+        if (state.turn_player_id) {
             store.gameStore.setCurrentPlayerId(state.turn_player_id);
         }
 
-        if(state.round){
+        if (state.round) {
             store.gameStore.setRound(state.round);
         }
 
-        //If it is not Undefined then , it could be either  true or false 
-        if(state.choosing != undefined){
-            if(state.choosing){
+        if (state.choosing !== undefined) {
+            if (state.choosing) {
                 store.gameStore.setCurrentWord(undefined);
             }
             store.gameStore.setChoosing(state.choosing);
         }
 
-        if(state.wordList){
-            store.gameStore.setWordList(state.wordList)
+        if (state.word_list) {
+            store.gameStore.setWordList(state.word_list);
         }
 
-        if(state.time_left != undefined){
+        if (state.time_left !== undefined) {
             store.gameStore.setTimeLeft(state.time_left);
         }
 
-        if(state.word_length){
+        if (state.round_start !== undefined) {
+            store.gameStore.setRoundStart(state.round_start);
+        }
+
+        if (state.word_length) {
             store.gameStore.setWordLength(state.word_length);
         }
-            
     }
 
-    public roundSyncClient(word?:string){
-        if(store.gameStore.myChance){
-            webSocketServices.emitEvent(EventTypeEnum.ROOM_SYNC,{
-                chosen_word:word
-            })
+    public roundSyncClient(word?: string) {
+        if (store.gameStore.myChance) {
+            webSocketServices.emitEvent(EventTypeEnum.ROUND_SYNC, {
+                chosen_word: word,
+            });
         }
     }
 
-
-    public drawServer({commands}:{commands:Array<Array<number>>}){
-        for(const command of commands){
-            if(command[0]===1){
+    public drawServer({ commands }: { commands: Array<Array<number>> }) {
+        for (const command of commands) {
+            if (command[0] === 1) {
+                canvasService.eraseOnCanvas(command[1], command[2]);
+            } else if (command[0] === 0) {
                 canvasService.drawOnCanvas(
                     command[1],
                     command[2],
                     command[3],
-                    command[4],
+                    command[4]
                 );
-            }else if( command[0]==1){
+            } else if (command[0] === 2) {
                 canvasService.clearCanvas();
             }
         }
     }
 }
 
-export const  roundService = RoundService.getInstance();
+export const roundService = RoundService.getInstance();

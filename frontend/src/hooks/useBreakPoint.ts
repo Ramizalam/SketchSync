@@ -28,7 +28,7 @@ export const is2XLarge = (breakPoints: string): boolean => {
     return breakPoints === '2xl';
 }
 
-export const userBreakingPoint = () => {
+export const useBreakPoint = () => {
     const [breakPoint, setBreakPoint] = useState("");
     const [windowSize, setWindowSize] = useState({
         width: window.innerWidth,

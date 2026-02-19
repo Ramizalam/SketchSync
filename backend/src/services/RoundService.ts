@@ -28,8 +28,8 @@ class RoundService {
             word: room.currentWord,
         })
 
-        webSocketServices.sendToRoomByIO(EventTypeEnum.ROOM_SYNC, room.id, {
-            room_start: false
+        webSocketServices.sendToRoomByIO(EventTypeEnum.ROUND_SYNC, room.id, {
+            round_start: false
         })
 
         setTimeout(() => {
@@ -54,96 +54,98 @@ class RoundService {
                 return;
             }
             const currScore = room.scores[player.id]!;
-            const timeLeft = room.roomSetting.round_time - room.timeElapsed;
-            if (timeLeft > 0) {
+            const time_left = room.roomSetting.round_time - room.timeElapsed;
+            if (time_left > 0) {
                 //----change the core of player who guessed the word and also the drawer based on how quicky they got the answer
 
-                room.changeScore(player.id, currScore + timeLeft * 5)
-                room.changeScore(drawerId, room.scores[drawerId]! + timeLeft * 2);
+                room.changeScore(player.id, currScore + time_left * 5)
+                room.changeScore(drawerId, room.scores[drawerId]! + time_left * 2);
                 room.markPlayerGuessed(player.id)
 
-                webSocketServices.sendToRoomByIO(EventTypeEnum.ROOM_SYNC, room.id, {
+                webSocketServices.sendToRoomByIO(EventTypeEnum.ROUND_SYNC, room.id, {
                     scores: room.scores,
                     guessed_player_id: player.id,
-                    timeLeft: timeLeft - 1,
+                    time_left: time_left - 1,
                 });
 
             }
-                // if all the player in the room guessed the words then  revel the word
+            // if all the player in the room guessed the words then  revel the word
             if (room.getGuessPlayerCount() + 1 === room.players.length) {
                 webSocketServices.sendToRoom(socket, EventTypeEnum.WORD_REVEAL, room.id, {
                     word: room.currentWord,
                 })
                 // start a new Round
-                webSocketServices.sendToRoomByIO(EventTypeEnum.ROOM_SYNC, room.id, {
-                    roundStart: false
+                webSocketServices.sendToRoomByIO(EventTypeEnum.ROUND_SYNC, room.id, {
+                    round_start: false
                 });
                 setTimeout(() => { this.roundSync(socket) }, 5000);
             }
-        }else{
+        } else {
             // if the guess is wrong
-            webSocketServices.sendToRoom(socket,EventTypeEnum.CHAT,room.id,{
+            webSocketServices.sendToRoom(socket, EventTypeEnum.CHAT, room.id, {
                 message: message,
-                id:player.id
+                id: player.id
             })
         }
 
     }
 
 
-    public async roundSync(socket:Socket,chosenWord?:string){
-        const{player,room} = gameHelperService.getPlayerAndRoom(socket,false);
-        if(!player || !room) return;
+    public async roundSync(socket: Socket, chosenWord?: string) {
+        console.log("roundSync is called")
+        const { player, room } = gameHelperService.getPlayerAndRoom(socket, false);
+        if (!player || !room) return;
+        console.log("from rundsync : player is "+player, "and room is "+room)
 
-        if(chosenWord && chosenWord.trim()!=""){
+        if (chosenWord && chosenWord.trim() != "") {
             room.setCurrentWord(chosenWord),
-            room.resetRound();
-            webSocketServices.sendToRoomByIO(EventTypeEnum.ROOM_SYNC,room.id,{
+                room.resetRound();
+            webSocketServices.sendToRoomByIO(EventTypeEnum.ROUND_SYNC, room.id, {
                 choosing: false,
-                round_start:true,
-                wordLength : chosenWord.length
+                round_start: true,
+                word_length: chosenWord.length
             })
-        }else{
-             if(room.isFinalOver()){
-                webSocketServices.sendToRoomByIO(EventTypeEnum.END_GAME,room.id,{
-                    game_state:GameStateEnum.END,
+        } else {
+            if (room.isFinalOver()) {
+                webSocketServices.sendToRoomByIO(EventTypeEnum.END_GAME, room.id, {
+                    game_state: GameStateEnum.END,
                     scores: room.scores,
                 });
-             }else if(room.roomSetting.round_time-room.timeElapsed <=0 || room.getGuessPlayerCount()+1== room.players.length){
-                   if(room.chanceCount ===room.players.length){
-                      room.updateCurrentRound(room.currentRound+1);
-                      room.setChanceCount(1);
-                   }else{
-                         room.setChanceCount(room.chanceCount +1);
-                   }
-                   room.updateToNextPlayer();
-                   room.setCurrentWord("");
-                   room.resetRound();
-                   const  nextPlayerId  =  room.players[room.currentPlayerIndex];
-                   webSocketServices.sendToRoomByIO(EventTypeEnum.ROOM_SYNC,room.id,{
-                    scores : room.scores,
-                    turn_player_id : nextPlayerId,
+            } else if (room.roomSetting.round_time - room.timeElapsed <= 0 || room.getGuessPlayerCount() + 1 == room.players.length) {
+                if (room.chanceCount === room.players.length) {
+                    room.updateCurrentRound(room.currentRound + 1);
+                    room.setChanceCount(1);
+                } else {
+                    room.setChanceCount(room.chanceCount + 1);
+                }
+                room.updateToNextPlayer();
+                room.setCurrentWord("");
+                room.resetRound();
+                const nextPlayerId = room.players[room.currentPlayerIndex];
+                webSocketServices.sendToRoomByIO(EventTypeEnum.ROUND_SYNC, room.id, {
+                    scores: room.scores,
+                    turn_player_id: nextPlayerId,
                     round: room.currentRound,
-                    choosing:true,
+                    choosing: true,
                     round_change: true,
-                   })
+                })
 
-                   webSocketServices.sendToRoomByIO(EventTypeEnum.DRAW,room.id,{
-                    commands:[[2]],
-                   })
+                webSocketServices.sendToRoomByIO(EventTypeEnum.DRAW, room.id, {
+                    commands: [[2]],
+                })
 
-                   const nextPlayer = nextPlayerId ? mapService.getEntity<Player>(nextPlayerId) : undefined;
-                   if(!nextPlayer){
+                const nextPlayer = nextPlayerId ? mapService.getEntity<Player>(nextPlayerId) : undefined;
+                if (!nextPlayer) {
                     console.log("[Game Service] something went wrong next player does not exist")
-                     webSocketServices.sendToRoomByIO(EventTypeEnum.ERROR,room.id , "Server Error");
-                   }else{
-                    webSocketServices.sendPrivate(nextPlayer.mySocket,EventTypeEnum.ROOM_SYNC,{
-                        word_list:gameHelperService.getRandomWords()
+                    webSocketServices.sendToRoomByIO(EventTypeEnum.ERROR, room.id, "Server Error");
+                } else {
+                    webSocketServices.sendPrivate(nextPlayer.mySocket, EventTypeEnum.ROUND_SYNC, {
+                        word_list: gameHelperService.getRandomWords()
                     })
-                   }
-             }
+                }
+            }
         }
     }
 }
 
-export const  roundService = RoundService.getInstance();
+export const roundService = RoundService.getInstance();
