@@ -1,6 +1,6 @@
-# Skrible
+# SketchSync
 
-Skrible is a real-time multiplayer drawing and guessing game (a Skribbl-like app) implemented with a TypeScript Node.js backend and a React + Vite frontend. It uses WebSockets/Redis for real-time sync between players and supports multiple rounds, turn-based drawing, and in-game chat.
+ SketchSync is a real-time multiplayer drawing and guessing game (a Skribbl-like app) implemented with a TypeScript Node.js backend and a React + Vite frontend. It uses WebSockets/Redis for real-time sync between players and supports multiple rounds, turn-based drawing, and in-game chat.
 
 **This README** explains the project structure, how to run the app locally, development notes, and where to look for the main features.
 
