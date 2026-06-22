@@ -1,49 +1,26 @@
 import React from "react";
-import CanvasGameArea from "../components/CanvasGameArea";
-import ChatArea from "../components/ChatArea";
-import GameInfoArea from "../components/GameInfoArea";
 import LeaderBoard from "../components/LeaderBoard";
-import { isLarge, isMedium, isSmall, useBreakPoint } from "../hooks/useBreakPoint";
+import Header from "../components/Header";
 
-interface Props {
-  currentOption: number;
-  handleOption: (val: number) => void;
-}
+interface Props { }
 
-const GamePage: React.FC<Props> = ({ handleOption, currentOption }) => {
-  const breakpoint = useBreakPoint();
+const GameOverPage: React.FC<Props> = () => {
   return (
-    <div className="h-full w-full border-2 border-black lg:p-4 lg:flex">
-      <div className="lg:w-1/4 p-2 lg:h-4/5">
-        <GameInfoArea
-          currentOption={currentOption}
-          handleOption={handleOption}
-        />
-      </div>
-      <div className="w-9/10 ml-auto p-2 h-4/6 lg:h-4/5 lg:w-1/2">
-        <CanvasGameArea />
-      </div>
-      <div
-        className={`lg:w-1/4 ml-auto w-9/10 p-2 h-56 lg:h-4/5 ${(isSmall(breakpoint) || isMedium(breakpoint) || isLarge(breakpoint)) && currentOption !== 1
-            ? "hidden"
-            : "visible"
-          }`}
-      >
-        <ChatArea />
-      </div>
-      <div
-        className={`lg:w-1/4 ml-auto w-9/10 p-2 h-56 ${(isSmall(breakpoint) || isMedium(breakpoint) || isLarge(breakpoint)) ? currentOption !== 2
-            ? "hidden"
-            : "visible"
-            : "hidden"
-          }`}
-      >
-        <LeaderBoard />
+    <div className="flex items-center justify-center w-full h-full p-4">
+      <div className="glass-card w-full max-w-lg p-8 flex flex-col items-center space-y-6 animate-bounce-in">
+        <Header>SketchSync</Header>
+        <h2 className="font-display text-3xl" style={{ color: 'var(--color-coral)' }}>
+          🎉 Game Over!
+        </h2>
+        <div className="w-full">
+          <LeaderBoard />
+        </div>
+        <p className="font-display text-lg animate-float" style={{ color: 'var(--color-blue)' }}>
+          Thanks for playing! 🎮
+        </p>
       </div>
     </div>
   );
 };
 
-
-
-export default React.memo(GamePage);
+export default React.memo(GameOverPage);

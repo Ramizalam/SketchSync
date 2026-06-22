@@ -187,7 +187,7 @@ class Room extends BaseSchema {
     }
 
     public checkGuessWord(word: string) {
-        return this._currentWord === word;
+        return this._currentWord.toLowerCase() === word.toLowerCase();
     }
 
 }

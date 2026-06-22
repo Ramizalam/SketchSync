@@ -203,14 +203,19 @@ class GameStore {
 
   @action
   public setScores(scores: { [playerId: string]: number }) {
-    this.players.forEach((p) => {
-      p.score = scores[p.id];
-    });
+    const newPlayers = { ...this._players };
+    for (const [id, score] of Object.entries(scores)) {
+      if (newPlayers[id]) {
+        newPlayers[id] = { ...newPlayers[id], score };
+      }
+    }
+    this._players = newPlayers;
   }
 
   @action
   public setScore(playerId: string, score: number) {
-    this._players[playerId].score = score;
+    this._players[playerId] = { ...this._players[playerId], score };
+    this._players = { ...this._players };
   }
 
   public get topScorers(): Player[] {

@@ -53,6 +53,13 @@ const MainPage: React.FC<Props> = ({ roomId }) => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handlePlay();
+    }
+  };
+
   useEffect(() => {
     if (!roomId?.trim()) return;
     if (!name?.trim()) return;
@@ -82,50 +89,70 @@ const MainPage: React.FC<Props> = ({ roomId }) => {
   };
 
   return (
-    <div
-      className="lg:w-4/5 lg:h-4/5 xl:h-2/3 xl:w-2/4 lg:mx-auto h-full 
-  w-full p-2  border shadow-lg rounded-md border-black 
-  lg:flex lg:flex-row lg:justify-start lg:items-stretch"
-    >
-      <div className="xl:w-2/6 lg:w-2/5 p-2 h-4/6 lg:h-full">
-        <Header className="mx-auto lg:hidden">Skribble</Header>
-        <h2 className="text-center my-2 text-xl">Draw your avatar</h2>
-        <div className=" border-2 p-2 h-4/6 lg:h-5/6 border-black rounded-md">
-          <div className="m-1 border-2 border-black w-full md:w-1/2 mx-auto h-4/6 lg:w-full lg:h-3/5 rounded-md">
-            <div className={`${defaultavatar ? "hidden" : ""} w-full h-full`}>
-              <AvatarCanvasArea tool={tool} drawing={drawing} setDrawing={setDrawing} />
+    <div className="flex items-center justify-center w-full h-full p-4">
+      <div className="main-card w-full max-w-4xl lg:flex lg:flex-row">
+        {/* Left side - Avatar drawing */}
+        <div className="avatar-draw-section lg:w-2/5 p-5">
+          <Header className="lg:hidden mx-auto">SketchSync</Header>
+          <h2 className="text-center font-display text-xl mb-3" style={{ color: 'var(--color-purple-dark)' }}>
+            🎨 Draw Your Avatar
+          </h2>
+          <div className="p-3">
+            {/* Avatar canvas */}
+            <div className="canvas-frame mx-auto aspect-square max-w-[240px] lg:max-w-full">
+              <div className={`${defaultavatar ? "hidden" : ""} w-full h-full`}>
+                <AvatarCanvasArea tool={tool} drawing={drawing} setDrawing={setDrawing} />
+              </div>
+              <div className={`${!defaultavatar ? "hidden" : ""} w-full h-full flex items-center justify-center bg-white`}>
+                <img src={avatarImage} className="object-contain w-full h-full p-2" />
+              </div>
             </div>
-            <div className={`${!defaultavatar ? "hidden" : ""} w-full h-full`}>
-              <img src={avatarImage} className="object-fit w-full h-full"></img>
+
+            {/* Drawing tools */}
+            <div className="flex gap-3 justify-center mt-3">
+              <button className={`game-btn-icon ${tool === 0 ? 'active' : ''}`} onClick={selectPencil} title="Pencil">
+                <TiPencil className="w-5 h-5" />
+              </button>
+              <button className={`game-btn-icon ${tool === 1 ? 'active' : ''}`} onClick={selectEraser} title="Eraser">
+                <BiEraser className="w-5 h-5" />
+              </button>
+              <button className="game-btn-icon" onClick={selectClear} title="Clear">
+                <AiOutlineClear className="w-5 h-5" />
+              </button>
+              <button className="game-btn-icon" onClick={handleDefault} title="Random Avatar">
+                <GiPerspectiveDiceSixFacesRandom className="w-5 h-5" />
+              </button>
             </div>
-          </div>
-          <div className=" flex space-x-2 p-1 justify-center">
-            <Button icon={TiPencil} onClick={selectPencil} />
-            <Button icon={BiEraser} onClick={selectEraser} />
-            <Button icon={AiOutlineClear} onClick={selectClear} />
-            <Button icon={GiPerspectiveDiceSixFacesRandom} onClick={handleDefault} />
-          </div>
-          <div className="mt-6 flex justify-start items-center md:w-1/2 w-full lg:w-full mx-auto space-x-2">
-            <Input
-              value={name}
-              onChange={handleInput}
-              placeholder={"Enter your name"}
-              className={" border-2 border-black rounded-md "}
-            />
-            {/* <Button icon={true} className={"flex-shrink-0"}>
-              R
-            </Button> */}
+
+            {/* Name input */}
+            <div className="mt-4 max-w-[280px] mx-auto">
+              <Input
+                value={name}
+                onChange={handleInput}
+                onKeyDown={handleKeyDown}
+                placeholder={"Enter your name"}
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <div className="lg:w-4/6 h-2/6 lg:h-full  p-2 relative">
-        {!(isMedium(breakPoint) || isLarge(breakPoint) || isSmall(breakPoint)) && (
-          <Header className="mx-auto">Skribble</Header>
-        )}
-        <div className="lg:mt-6 mx-auto max-w-max lg:ml-4">
-          <Button onClick={handlePlay}>Play</Button>
+
+        {/* Right side - Play */}
+        <div className="play-section lg:w-3/5 relative">
+          {!(isMedium(breakPoint) || isLarge(breakPoint) || isSmall(breakPoint)) && (
+            <Header className="mx-auto">SketchSync</Header>
+          )}
+          <div className="animate-float">
+            <p className="font-display text-lg text-center mb-2" style={{ color: 'var(--color-dark)' }}>
+              Draw, Guess & Have Fun! 🎉
+            </p>
+          </div>
+          <button onClick={handlePlay} className="play-btn">
+            🚀 Play!
+          </button>
+          <button className="game-btn-icon absolute bottom-4 right-4" title="Help">
+            <FiHelpCircle className="w-5 h-5" />
+          </button>
         </div>
-        <Button icon={FiHelpCircle} className={`absolute bottom-3 right-3`} />
       </div>
     </div>
   );

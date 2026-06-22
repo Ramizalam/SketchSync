@@ -28,10 +28,11 @@ const App: React.FC<Props> = (props) => {
   const breakPoint = useBreakPoint();
 
   return (
-    <div className="h-screen overflow-hidden font-title">
+    <div className="game-bg h-screen overflow-hidden font-body">
       <div
-        className={`h-full w-full font-title ${gameState !== GameStateEnum.START && "lg:pt-1/16"
-          }`}
+        className={`h-full w-full transition-all duration-300 ${
+          gameState !== GameStateEnum.NONE ? "lg:pl-40" : ""
+        } ${gameState !== GameStateEnum.START && "lg:pt-1/16"}`}
       >
         {gameState === GameStateEnum.NONE ? (
           <MainPage roomId={roomId} />

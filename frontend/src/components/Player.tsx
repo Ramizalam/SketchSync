@@ -34,8 +34,9 @@ const Players: React.FC<Props> = (props) => {
 
   return (
     <div
-      className="fixed h-1/5 w-full bottom-0 overflow-x-auto flex 
-    overflow-y-hidden items-baseline justify-center"
+      className="player-bar fixed z-40
+        lg:w-40 lg:h-full lg:left-0 lg:top-0 lg:overflow-y-auto lg:overflow-x-hidden flex lg:flex-col lg:items-center lg:justify-start lg:py-4 lg:gap-2
+        w-full h-1/5 bottom-0 overflow-x-auto flex-row items-center justify-center px-4 gap-2"
     >
       {memoPlayers}
     </div>

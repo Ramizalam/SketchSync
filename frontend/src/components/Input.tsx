@@ -1,15 +1,21 @@
-import React, { ChangeEventHandler } from "react";
+import React, { ChangeEventHandler, KeyboardEventHandler } from "react";
 
 interface Props {
   onChange: ChangeEventHandler<HTMLInputElement>
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement>
   value: string
   className?: string
   placeholder?: string
 }
 
-const Input: React.FC<Props> = ({ onChange, value, className, placeholder }) => {
-  return <input onChange={onChange} value={value} placeholder={placeholder}
-    className={`bg-transparent mx-1 h-full w-full focus:outline-none p-2 ${className}`} />
+const Input: React.FC<Props> = ({ onChange, onKeyDown, value, className, placeholder }) => {
+  return <input
+    onChange={onChange}
+    onKeyDown={onKeyDown}
+    value={value}
+    placeholder={placeholder}
+    className={`game-input ${className || ""}`}
+  />
 }
 
 Input.defaultProps = {};

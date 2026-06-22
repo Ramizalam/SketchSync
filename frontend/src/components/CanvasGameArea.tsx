@@ -2,7 +2,6 @@ import { observer } from "mobx-react";
 import React, { useCallback, useRef, useState } from "react";
 import { canvasService } from "../service/CanvasServices";
 import store from "../store";
-import Button from "./Button";
 import Canvas from "./Canavas";
 import { TiPencil } from "react-icons/ti"
 import { BiEraser } from "react-icons/bi"
@@ -76,14 +75,32 @@ const CanvasGameArea: React.FC<Props> = (props) => {
   }, [myChance, choosing, drawing])
 
   return (
-    <div className="h-full">
-      <div className="w-full h-9/10 border-2 border-black rounded-md " ref={containerRef}>
+    <div className="h-full flex flex-col">
+      <div className="canvas-frame flex-1 min-h-0" ref={containerRef}>
         <Canvas onDraw={onDrawing} onStart={startDrawing} onStop={endDrawing} onEnd={onExit} className="bg-white w-full h-full" />
       </div>
-      <div className="mt-4 flex justify-center space-x-4 h-1/10">
-        <Button icon={TiPencil} onClick={selectPencil} />
-        <Button icon={BiEraser} onClick={selectEraser} />
-        <Button icon={AiOutlineClear} onClick={selectClear} />
+      <div className="canvas-tools mt-2">
+        <button
+          className={`game-btn-icon ${pencil === 0 && myChance ? 'active' : ''}`}
+          onClick={selectPencil}
+          title="Pencil"
+        >
+          <TiPencil className="w-5 h-5" />
+        </button>
+        <button
+          className={`game-btn-icon ${pencil === 1 && myChance ? 'active' : ''}`}
+          onClick={selectEraser}
+          title="Eraser"
+        >
+          <BiEraser className="w-5 h-5" />
+        </button>
+        <button
+          className="game-btn-icon"
+          onClick={selectClear}
+          title="Clear"
+        >
+          <AiOutlineClear className="w-5 h-5" />
+        </button>
       </div>
     </div>
   );

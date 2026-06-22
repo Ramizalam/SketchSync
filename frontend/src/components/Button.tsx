@@ -9,39 +9,39 @@ interface Props {
   disabled?: boolean;
   icon?: IconType;
   iconBorder?: boolean;
+  variant?: "primary" | "secondary" | "danger" | "warning";
 }
 
 const Button: React.FC<Props> = (props) => {
+  const variant = props.variant || "primary";
+
   const normalButtonClass = useMemo(
-    () => `border-2 border-black text-xl p-2 rounded-md 
-  text-center w-40 shadow-lg hover:scale-110 hover:text-2xl h-12  
-  disabled:opacity-60 ${props.className} `,
-    []
+    () => `game-btn game-btn-${variant} ${props.className || ""}`,
+    [variant, props.className]
   );
 
   const iconButtonClass = useMemo(
-    () =>
-      `w-10 h-10 ${props.iconBorder ? "border border-black rounded-md" : ""} ${props.className} `,
-    []
+    () => `game-btn-icon ${props.className || ""}`,
+    [props.className]
   );
 
   return (
     <button
-      type={props.type ='button'}
-      className={props.icon ? iconButtonClass : normalButtonClass}
+      type={props.type || 'button'}
+      className={props.icon && !props.children ? iconButtonClass : normalButtonClass}
       onClick={props.onClick}
       disabled={props.disabled}
     >
-      {" "}
-      {props.icon && <props.icon className="w-full h-full hover:animate-pulse" />}
-      {props.children && <p>{props.children}</p>}
+      {props.icon && <props.icon className="w-5 h-5" />}
+      {props.children && <span>{props.children}</span>}
     </button>
   );
 };
 
 Button.defaultProps = {
   type: "button",
-  iconBorder: true
+  iconBorder: true,
+  variant: "primary",
 };
 
 export default React.memo(Button);

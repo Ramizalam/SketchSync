@@ -17,8 +17,10 @@ const EventNotifier: React.FC<Props> = (props) => {
       <Button
         onClick={() => {
           roundService.roundSyncClient(word);
+          store.gameStore.setCurrentWord(word);
         }}
         key={word}
+        variant="secondary"
       >
         {word}
       </Button>
@@ -52,24 +54,26 @@ const EventNotifier: React.FC<Props> = (props) => {
     <>
       <Notification open={choosing && myChance && !currentWord}>
         <div className="flex flex-col items-center space-y-4">
-          <h2>Choose a word</h2>
-          {memorizedWord}
+          <h2 className="font-display text-2xl">🎨 Pick a Word!</h2>
+          <div className="flex flex-wrap gap-3 justify-center">
+            {memorizedWord}
+          </div>
         </div>
       </Notification>
       <Notification open={wordReveal}>
-        <h2>Word was {currentWord}</h2>
+        <h2 className="font-display text-2xl">
+          The word was: <span className="text-gradient-rainbow font-bold">{currentWord}</span>
+        </h2>
       </Notification>
       <Notification open={notifySelection}>
         <>
           {choosing ? (
-            <span>
-              <span className="text-green-700">{drawer?.name}</span> is choosing
-              a word
+            <span className="text-xl">
+              <span className="highlight font-bold">{drawer?.name}</span> is choosing a word 🤔
             </span>
           ) : (
-            <span>
-              <span className="text-green-700">{drawer?.name}</span> starts
-              drawing
+            <span className="text-xl">
+              <span className="highlight font-bold">{drawer?.name}</span> starts drawing! 🖌️
             </span>
           )}
         </>

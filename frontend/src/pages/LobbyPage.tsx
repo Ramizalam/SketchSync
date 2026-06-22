@@ -17,14 +17,12 @@ const LobbyPage: React.FC<Props> = (props) => {
   const disabled = me?.role === UserRole.JOINER || players.length < 2;
   const roundOptions = Array(8)
     .fill(0)
-    .map((_, index) => <option value={index + 3}>{index + 3}</option>);
+    .map((_, index) => <option value={index + 3} key={index + 3}>{index + 3}</option>);
 
   const timeOptions = Array(8)
     .fill(45)
     .map((n, index) => (
-      <>
-        <option value={n + index * 15}>{n + index * 15}</option>
-      </>
+      <option value={n + index * 15} key={n + index * 15}>{n + index * 15}s</option>
     ));
 
   const handleStartGame = () => {
@@ -54,36 +52,52 @@ const LobbyPage: React.FC<Props> = (props) => {
   }, [setting.round_time, setting.total_rounds, me?.role]);
 
   return (
-    <>
-      <div className="lg:w-4/5 lg:h-3/5 xl:h-3/5 xl:w-2/5 lg:mx-auto 
-    lg:pt-1/20 xl:pt-1/50 flex  lg:border flex-col justify-start items-center 
-   space-y-4 pt-1/3 md:pt-1/8 lg:shadow-lg rounded-md lg:border-black ">
-        <Header className=" mt-1/20">Skribble</Header>
-        <DropDown
-          id="rounds"
-          title="No Of Rounds :"
-          value={setting.total_rounds}
-          onChange={handleRoundChange}
-          disabled={disabled}
-        >
-          {roundOptions}
-        </DropDown>
-        <DropDown
-          id="time"
-          title="Time Each Round :"
-          value={setting.round_time}
-          onChange={handleTimeChange}
-          disabled={disabled}
-        >
-          {timeOptions}
-        </DropDown>
-        <Button disabled={disabled} onClick={handleStartGame}>Start</Button>
-        <div className="flex justify-center items-center">
-          <h2 className=" mt-2 px-4 text-lg font-medium">Invite Link : <a href={`/?${roomId}`} target={"_blank"} className=" text-blue-400">{roomId}</a> </h2>
-          <Button icon={FiShare2} onClick={handleCopy} />
+    <div className="flex items-center justify-center w-full h-full p-4">
+      <div className="lobby-card w-full max-w-md flex flex-col items-center space-y-5">
+        <Header>SketchSync</Header>
+
+        <div className="w-full space-y-2">
+          <DropDown
+            id="rounds"
+            title="🎯 Rounds:"
+            value={setting.total_rounds}
+            onChange={handleRoundChange}
+            disabled={disabled}
+          >
+            {roundOptions}
+          </DropDown>
+          <DropDown
+            id="time"
+            title="⏱️ Time:"
+            value={setting.round_time}
+            onChange={handleTimeChange}
+            disabled={disabled}
+          >
+            {timeOptions}
+          </DropDown>
         </div>
+
+        <Button disabled={disabled} onClick={handleStartGame} variant="primary">
+          🎮 Start Game
+        </Button>
+
+        <div className="invite-link-area w-full">
+          <span className="font-display text-sm" style={{ color: 'var(--color-dark)', whiteSpace: 'nowrap' }}>
+            🔗 Invite:
+          </span>
+          <a href={`/?${roomId}`} target={"_blank"} className="invite-link truncate flex-1">
+            {roomId}
+          </a>
+          <button className="game-btn-icon" onClick={handleCopy} title="Copy Link" style={{ width: '34px', height: '34px', minWidth: '34px' }}>
+            <FiShare2 className="w-4 h-4" />
+          </button>
+        </div>
+
+        <p className="font-body text-sm animate-float" style={{ color: 'var(--color-blue)' }}>
+          👥 {players.length} player{players.length !== 1 ? 's' : ''} in lobby...
+        </p>
       </div>
-    </>
+    </div>
   );
 };
 

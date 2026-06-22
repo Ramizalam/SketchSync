@@ -1,15 +1,14 @@
 import { observer } from "mobx-react";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { roundService } from "../service/RoundServices";
 import store from "../store";
-import Button from "./Button";
-import Input from "./Input";
 import { GrSend } from "react-icons/gr"
 
 interface Props { }
 
 const ChatArea: React.FC<Props> = (props) => {
     const [message, setMessage] = useState("");
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const { me, myChance } = store.gameStore;
     const handleOnChange = useCallback((event: any) => {
@@ -27,25 +26,46 @@ const ChatArea: React.FC<Props> = (props) => {
         }
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+        }
+    };
+
+    // Auto-scroll to bottom on new messages
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [chats.length]);
+
     return (
-        <div className="border-2 border-black rounded-md h-full">
-            <div className="text-xl h-3/4 lg:h-9/10 tracking-wider overflow-y-auto">
-                {chats.map((chat) => (
-                    <p className="my-1 bg-gray-200 p-2 rounded-md opacity-75" key={chat.by + chat.message}>
-                        <span className=" text-green-700 mr-2 break-normal">
-                            {chat.by}
+        <div className="chat-container h-full">
+            <div className="chat-header">
+                💬 Chat
+            </div>
+            <div className="chat-messages" style={{ flex: 1, minHeight: 0 }}>
+                {chats.map((chat, index) => (
+                    <div className="chat-bubble" key={chat.by + chat.message + index}>
+                        <span className="chat-sender">
+                            {chat.by}:
                         </span>
                         {chat.message}
-                    </p>
+                    </div>
                 ))}
+                <div ref={messagesEndRef} />
             </div>
-            <div className="lg:h-1/10 border-black border-t-2 rounded-md flex justify-between items-center px-2 ">
-                <Input
+            <div className="chat-input-area">
+                <input
                     value={message}
                     onChange={handleOnChange}
-                    placeholder={"Enter your message"}
+                    onKeyDown={handleKeyDown}
+                    placeholder={myChance ? "You're drawing!" : "Type your guess..."}
+                    className="chat-input"
+                    disabled={myChance}
                 />
-                <Button onClick={sendMessage} icon={GrSend} iconBorder={false} />
+                <button onClick={sendMessage} className="chat-send-btn" disabled={myChance}>
+                    <GrSend />
+                </button>
             </div>
         </div>
     );

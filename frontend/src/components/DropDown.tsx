@@ -11,13 +11,12 @@ interface Props {
 
 const DropDown: React.FC<Props> = (props) => {
   return (
-    <div className="flex justify-between items-center m-2 p-2">
-      <label className="text-lg font-medium w-40">{props.title}</label>
+    <div className="lobby-setting">
+      <label className="lobby-setting-label" htmlFor={props.id}>{props.title}</label>
       <select
         value={props.value}
         onChange={props.onChange}
-        className=" disabled:opacity-60 bg-transparent focus:outline-none w-24
-        border-2 text-center border-black rounded-md"
+        className="game-select"
         id={props.id}
         disabled={props.disabled}
       >

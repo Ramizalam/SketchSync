@@ -21,6 +21,7 @@ const GameInfoArea: React.FC<Props> = ({ currentOption, handleOption }) => {
     wordLength,
     myChance,
     choosing,
+    currentWord,
   } = store.gameStore;
   const drawer = store.gameStore.getPlayerById(currentPlayerId!);
 
@@ -29,40 +30,68 @@ const GameInfoArea: React.FC<Props> = ({ currentOption, handleOption }) => {
   };
 
   const breakpoint = useBreakPoint();
+
+  // Generate word blanks or the actual word for the drawer
+  const wordDisplay = useMemo(() => {
+    if (choosing) return null;
+    
+    if (myChance && currentWord) {
+      return (
+        <div className="word-blanks my-2">
+          {currentWord.split('').map((char, i) => (
+            <div className="word-blank" style={{ color: 'var(--color-purple-dark)' }} key={i}>{char}</div>
+          ))}
+        </div>
+      );
+    }
+    
+    const length = wordLength || 4;
+    return (
+      <div className="word-blanks my-2">
+        {Array(length).fill(0).map((_, i) => (
+          <div className="word-blank" key={i}>_</div>
+        ))}
+      </div>
+    );
+  }, [wordLength, myChance, choosing, currentWord]);
+
   return (
     <>
-      <div className="flex items-center lg:flex-col lg:w-full lg:h-full">
-        <Header size="text-2xl lg:text-5xl"> Skribble</Header>
-        <div className="flex text-xl flex-wrap w-full lg:flex-col lg:space-x-0 lg:border-2
-         lg:p-2  justify-center lg:border-black lg:rounded-md space-x-4">
-          <h2>Round :- {round}</h2>
-          {breakpoint !== "sm" && breakpoint !== "md" && (
-            <h2>Drawer :- {drawer ? drawer.name : ""}</h2>
-          )}
-          <Timer
-            start={setting.round_time}
-            onTimerEnd={onTimerEnd}
-            stop={!roundStart}
-            reset={!roundStart}
-          />
-          {!myChance && !choosing && <h2> Word :- {Array(wordLength || 4).fill("_").join(" ")}</h2>}
+      <div className="flex items-center lg:flex-col lg:w-full lg:h-full gap-2">
+        <Header size="skribbl-logo-sm lg:skribbl-logo-md">SketchSync</Header>
+        <div className="game-info-panel w-full lg:glass-card lg:p-3">
+          <div className="flex flex-wrap items-center gap-2 justify-center">
+            <span className="info-badge info-badge-round">
+              🎯 Round {round}
+            </span>
+            {breakpoint !== "sm" && breakpoint !== "md" && drawer && (
+              <span className="info-badge info-badge-drawer">
+                🖌️ {drawer.name}
+              </span>
+            )}
+            <Timer
+              start={setting.round_time}
+              onTimerEnd={onTimerEnd}
+              stop={!roundStart}
+              reset={!roundStart}
+            />
+          </div>
+          {wordDisplay}
         </div>
-        <div className={`w-full ${isSmall(breakpoint) || isMedium(breakpoint) || isLarge(breakpoint) ? "hidden" : "visible"}`}>
+        <div className={`w-full mt-2 ${isSmall(breakpoint) || isMedium(breakpoint) || isLarge(breakpoint) ? "hidden" : "visible"}`}>
           <LeaderBoard />
         </div>
       </div>
       {(isSmall(breakpoint) || isMedium(breakpoint) || isLarge(breakpoint)) &&
-        <div className="flex flex-col fixed py-4 pr-2 h-3/5 top-1/5 w-10  text-xl">
+        <div className="tab-switcher">
           {options.map((op, index) => {
             return (
               <div
-                className={`${currentOption === index && " text-2xl  bg-gray-200"} text-center border h-full w-full cursor-pointer ${index === 0 ? "rounded-t-full" : index === options.length - 1 ? "rounded-b-full" : ""} border-black`}
-                style={{
-                  textOrientation: "sideways",
-                  writingMode: "vertical-lr",
-                }}
+                className={`tab-btn ${currentOption === index ? "tab-active" : ""}`}
+                key={op}
+                onClick={() => { handleOption(index) }}
               >
-                <h2 onClick={() => { handleOption(index) }}>{op}</h2>
+                {op}
               </div>
             );
           })}

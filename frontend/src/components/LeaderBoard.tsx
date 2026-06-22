@@ -6,34 +6,33 @@ interface Props { }
 
 const LearderBoard: React.FC<Props> = (props) => {
   const { topScorers } = store.gameStore;
+
+  const getPosDisplay = (index: number) => {
+    if (index === 0) return '🥇';
+    if (index === 1) return '🥈';
+    if (index === 2) return '🥉';
+    return `${index + 1}`;
+  };
+
   return (
-    <div className="w-full px-4 text-2xl lg:text-lg h-56 lg:max-h-max overflow-y-auto">
-      <h2 className="text-center">Leader board</h2>
-      <div className="flex justify-between">
-        <h2 className=" underline">Position</h2>
-        <h2 className=" text-green-700 underline">Name</h2>
-        <h2 className="underline">Scores</h2>
+    <div className="leaderboard-container h-full flex flex-col">
+      <div className="leaderboard-header">
+        🏆 Leaderboard
       </div>
-      {topScorers.map((player, index) => {
-        const colorClass =
-          index === 0
-            ? "text-orange-400"
-            : index === 1
-              ? "text-blue-400"
-              : index === 2
-                ? "text-green-400"
-                : "text-black";
-        return (
-          <div
-            className={`flex justify-between ${colorClass} `}
-            key={player.id}
-          >
-            <h2>{index + 1}</h2>
-            <h2>{player.name}</h2>
-            <h2>{player.score}</h2>
-          </div>
-        );
-      })}
+      <div className="flex-1 overflow-y-auto">
+        {topScorers.map((player, index) => {
+          return (
+            <div
+              className="leaderboard-row"
+              key={player.id}
+            >
+              <span className="leaderboard-pos">{getPosDisplay(index)}</span>
+              <span className="leaderboard-name">{player.name}</span>
+              <span className="leaderboard-score">{player.score}</span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

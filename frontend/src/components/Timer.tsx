@@ -32,7 +32,15 @@ const Timer: React.FC<Props> = ({ start, onTimerEnd, stop, reset }) => {
 
     useEffect(() => { if (reset) setTimer(start) }, [reset])
 
-    return <h2 className="flex items-center"><MdOutlineTimer className={`mr-2 ${timer !== start && timer > 0 ? "animate-bounce" : ""}`} /> {timer}</h2>
+    const ratio = timer / start;
+    const timerClass = ratio > 0.5 ? '' : ratio > 0.2 ? 'timer-warning' : 'timer-danger';
+
+    return (
+        <div className={`timer-badge ${timerClass}`}>
+            <MdOutlineTimer className="text-xl" />
+            <span>{timer}s</span>
+        </div>
+    );
 }
 
 Timer.defaultProps = {
