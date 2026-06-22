@@ -1,0 +1,57 @@
+import { observer } from "mobx-react-lite";
+import React, { useEffect, useState } from "react";
+import EventNotifier from "./components/EventNotifier";
+import Players from "./components/Player";
+import { GameStateEnum } from "./enums/GameState";
+import { isLarge, isMedium, isSmall, useBreakPoint } from "./hooks/useBreakPoint";
+import GamePage from "./pages/GamePage";
+import GameOverPage from "./pages/GameOverPage";
+import LobbyPage from "./pages/LobbyPage";
+import MainPage from "./pages/MainPage";
+import { gameStore } from "./store/GameStore";
+
+interface Props { }
+
+const App: React.FC<Props> = (props) => {
+  const { gameState } = gameStore;
+  const [roomId, setRoomId] = useState("");
+  useEffect(() => {
+    setRoomId(window.location.search.substring(1));
+  }, []);
+
+  const [currentOption, setCurrentOption] = useState(0);
+  const handleOption = (val: number) => {
+    if (val !== currentOption)
+      setCurrentOption(val);
+  }
+
+  const breakPoint = useBreakPoint();
+
+  return (
+    <div className="game-bg h-screen overflow-hidden font-body">
+      <div
+        className={`h-full w-full transition-all duration-300 ${
+          gameState !== GameStateEnum.NONE ? "lg:pl-40" : ""
+        } ${gameState !== GameStateEnum.START && "lg:pt-1/16"}`}
+      >
+        {gameState === GameStateEnum.NONE ? (
+          <MainPage roomId={roomId} />
+        ) : (
+          <>
+            {gameState === GameStateEnum.LOBBY && <LobbyPage />}
+            {gameState === GameStateEnum.START && <GamePage currentOption={currentOption} handleOption={handleOption} />}
+            {(gameState === GameStateEnum.END) && <GameOverPage />}
+            <div className={`${gameState === GameStateEnum.START && ((isMedium(breakPoint) || isSmall(breakPoint) || isLarge(breakPoint)) ? currentOption !== 0 ? " hidden " : " visible " : " visible ")}`}>
+              <Players />
+            </div>
+          </>
+        )}
+      </div>
+      {gameState === GameStateEnum.START && <EventNotifier />}
+    </div>
+  );
+};
+
+App.defaultProps = {};
+
+export default observer(App);
