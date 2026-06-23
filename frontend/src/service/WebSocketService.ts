@@ -12,7 +12,7 @@ class WebSocketServices {
       return WebSocketServices._instance;
    }
    public init(): void {
-      this.socket = io("http://localhost:4000", {
+      this.socket = io(import.meta.env.VITE_BACKEND_URL as string, {
          transports: ["websocket"]
       })
       console.log("[WebSocket service] Initialised")

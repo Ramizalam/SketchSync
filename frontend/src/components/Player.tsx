@@ -7,7 +7,7 @@ import Avatar from "./Avatar";
 
 interface Props { }
 
-const Players: React.FC<Props> = (props) => {
+const Players: React.FC<Props> = () => {
   const { topScorers: players, gameState } = store.gameStore;
 
   const memoPlayers = useMemo(() => {

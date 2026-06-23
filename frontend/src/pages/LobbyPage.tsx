@@ -11,7 +11,7 @@ import { FiShare2 } from "react-icons/fi"
 
 interface Props { }
 
-const LobbyPage: React.FC<Props> = (props) => {
+const LobbyPage: React.FC<Props> = () => {
   const { roomId, me, setting, players } = store.gameStore;
 
   const disabled = me?.role === UserRole.JOINER || players.length < 2;

@@ -6,7 +6,7 @@ import { GrSend } from "react-icons/gr"
 
 interface Props { }
 
-const ChatArea: React.FC<Props> = (props) => {
+const ChatArea: React.FC<Props> = () => {
     const [message, setMessage] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
 

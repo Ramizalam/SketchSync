@@ -9,7 +9,7 @@ import { AiOutlineClear } from "react-icons/ai"
 
 interface Props { }
 
-const CanvasGameArea: React.FC<Props> = (props) => {
+const CanvasGameArea: React.FC<Props> = () => {
   const [drawing, setDrawing] = useState(false);
   const [pencil, setPencil] = useState(0);
 

@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Button from "../components/Button";
 import { gameServices } from "../service/GameServices";
 import { gameStore } from "../store/GameStore";
 import { UserRole } from "../model/entities/Player";

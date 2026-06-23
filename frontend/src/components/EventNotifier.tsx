@@ -7,7 +7,7 @@ import Notification from "../components/Notification";
 
 interface Props { }
 
-const EventNotifier: React.FC<Props> = (props) => {
+const EventNotifier: React.FC<Props> = () => {
   const { currentPlayerId, choosing, myChance, wordList, currentWord } =
     store.gameStore;
   const drawer = store.gameStore.getPlayerById(currentPlayerId!);

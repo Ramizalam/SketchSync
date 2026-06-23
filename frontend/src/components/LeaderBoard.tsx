@@ -4,7 +4,7 @@ import store from "../store";
 
 interface Props { }
 
-const LearderBoard: React.FC<Props> = (props) => {
+const LearderBoard: React.FC<Props> = () => {
   const { topScorers } = store.gameStore;
 
   const getPosDisplay = (index: number) => {
