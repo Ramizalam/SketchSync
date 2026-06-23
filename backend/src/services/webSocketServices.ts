@@ -23,7 +23,7 @@ class WebSocketServices {
         this.io = new Server(server, {
             transports: ["websocket"],
             cors: {
-                origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:4173"],
+                origin: [process.env.FRONTEND_URL as string],
                 methods: ["GET", "POST"]
             }
         })
