@@ -1,1 +1,0 @@
-{"version":3,"file":"playerDTO.d.ts","sourceRoot":"","sources":["../../../src/DTO/playerDTO.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,yBAAyB,CAAC;AAG5D,MAAM,WAAW,SAAS;IACxB,IAAI,EAAE,MAAM,CAAC;IACb,EAAE,EAAE,MAAM,CAAC;IACX,IAAI,CAAC,EAAE,YAAY,CAAA;IACnB,MAAM,EAAE,MAAM,CAAC;CAChB"}
