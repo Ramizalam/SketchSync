@@ -14,27 +14,27 @@ const GamePage: React.FC<Props> = ({ handleOption, currentOption }) => {
   const breakpoint = useBreakPoint();
   return (
     <div className="game-layout h-full w-full">
-      <div className="lg:w-1/4 p-2 lg:h-full">
+      <div className="w-full lg:w-1/4 p-2 lg:h-full flex-none">
         <GameInfoArea
           currentOption={currentOption}
           handleOption={handleOption}
         />
       </div>
-      <div className="w-9/10 ml-auto p-2 h-4/6 lg:h-full lg:w-1/2 flex flex-col">
+      <div className="w-full lg:w-1/2 p-2 flex-1 lg:flex-none flex flex-col">
         <CanvasGameArea />
       </div>
       <div
-        className={`lg:w-1/4 ml-auto w-9/10 p-2 h-56 lg:h-full ${(isSmall(breakpoint) || isMedium(breakpoint) || isLarge(breakpoint)) && currentOption !== 1
+        className={`w-full lg:w-1/4 p-2 flex-1 lg:flex-none ${(isSmall(breakpoint) || isMedium(breakpoint) || isLarge(breakpoint)) && currentOption !== 1
             ? "hidden"
-            : "visible"
+            : "flex"
           }`}
       >
         <ChatArea />
       </div>
       <div
-        className={`lg:w-1/4 ml-auto w-9/10 p-2 h-56 ${(isSmall(breakpoint) || isMedium(breakpoint) || isLarge(breakpoint)) ? currentOption !== 2
+        className={`w-full lg:w-1/4 p-2 flex-1 lg:flex-none ${(isSmall(breakpoint) || isMedium(breakpoint) || isLarge(breakpoint)) ? currentOption !== 2
             ? "hidden"
-            : "visible"
+            : "flex"
             : "hidden"
           }`}
       >

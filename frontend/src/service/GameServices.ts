@@ -60,10 +60,10 @@ class GameService {
     }
 
     public roomSyncServer(res: Response) {
-        console.log("this is [roomSyncServer]",res);
+        console.log("this is [roomSyncServer]", res);
         if (res.game_state) store.gameStore.setGameState(res.game_state);
         if (res.player_status !== undefined) {
-            console.log("roomsyncserver players: ",res.players)
+            console.log("roomsyncserver players: ", res.players)
             if (res.player_status === 0) {
                 if (res.players) {
                     res.players.map((p) => {

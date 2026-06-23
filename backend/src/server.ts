@@ -1,5 +1,6 @@
 import express from "express";
 import { createServer } from "http"
+import 'dotenv/config.js'
 import { webSocketServices } from "./services/webSocketServices.js";
 
 function boot(port: number) {
@@ -21,4 +22,4 @@ function boot(port: number) {
     })
 }
 
-boot(process.env.PORT);
+boot(Number(process.env.PORT || 8000));

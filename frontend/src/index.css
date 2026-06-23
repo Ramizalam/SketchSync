@@ -879,10 +879,17 @@ body {
 
 .game-layout {
   display: flex;
+  flex-direction: column;
   height: 100%;
   width: 100%;
   gap: 12px;
   padding: 12px;
+}
+
+@media (min-width: 1024px) {
+  .game-layout {
+    flex-direction: row;
+  }
 }
 
 /* Mobile tab switcher */
